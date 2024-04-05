@@ -28,11 +28,11 @@ $(document).ready(function() {
         });
         schema.push({
             id: "latitude",
-            dataType: tableau.dataTypeEnum.float
+            dataType: tableau.dataTypeEnum.numeric
         });
         schema.push({
             id: "longitude",
-            dataType: tableau.dataTypeEnum.float
+            dataType: tableau.dataTypeEnum.numeric
         });
         schema.push({
             id: "pollutant_id",
@@ -40,15 +40,15 @@ $(document).ready(function() {
         });
         schema.push({
             id: "pollutant_min",
-            dataType: tableau.dataTypeEnum.float
+            dataType: tableau.dataTypeEnum.numeric
         });
         schema.push({
             id: "pollutant_max",
-            dataType: tableau.dataTypeEnum.float
+            dataType: tableau.dataTypeEnum.numeric
         });
         schema.push({
             id: "pollutant_avg",
-            dataType: tableau.dataTypeEnum.float
+            dataType: tableau.dataTypeEnum.numeric
         });
         // Callback with the schema
         schemaCallback(schema);
@@ -68,12 +68,12 @@ $(document).ready(function() {
                     "city": record.city,
                     "station": record.station,
                     "last_update": new Date(record.last_update),
-                    "latitude": parseFloat(record.latitude),
-                    "longitude": parseFloat(record.longitude),
+                    "latitude": parsenumeric(record.latitude),
+                    "longitude": parsenumeric(record.longitude),
                     "pollutant_id": record.pollutant_id,
-                    "pollutant_min": parseFloat(record.pollutant_min),
-                    "pollutant_max": parseFloat(record.pollutant_max),
-                    "pollutant_avg": parseFloat(record.pollutant_avg)
+                    "pollutant_min": parsenumeric(record.pollutant_min),
+                    "pollutant_max": parsenumeric(record.pollutant_max),
+                    "pollutant_avg": parsenumeric(record.pollutant_avg)
                 };
                 formattedData.push(formattedRecord);
             });
