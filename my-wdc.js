@@ -1,9 +1,11 @@
 $(document).ready(function() {
+    // Define the Tableau connector
     var myConnector = tableau.makeConnector();
+
+    // Define the schema
     myConnector.getSchema = function (schemaCallback) {
-        
         var schema = [];
-        //Schema
+        // Define each field in the schema
         schema.push({
             id: "country",
             dataType: tableau.dataTypeEnum.string
@@ -48,20 +50,30 @@ $(document).ready(function() {
             id: "pollutant_avg",
             dataType: tableau.dataTypeEnum.float
         });
-        //Callback with the schema
+        // Callback with the schema
         schemaCallback(schema);
     };
+
+    // Define data retrieval function
     myConnector.getData = function (table, doneCallback) {
-       
         var apiEndpoint = "https://api.data.gov.in/resource/3b01bcb8-0b14-4abf-b6f2-c1bfd384ba69?api-key=579b464db66ec23bdd000001cdd3946e44ce4aad7209ff7b23ac571b&format=json";
 
         $.getJSON(apiEndpoint, function (data) {
-            // Format data properly!
+            // Format data properly
             var formattedData = [];
             $.each(data.records, function (index, record) {
                 var formattedRecord = {
-                    "example_field_1": record.example_field_1,
-                    "example_field_2": parseFloat(record.example_field_2)
+                    "country": record.country,
+                    "state": record.state,
+                    "city": record.city,
+                    "station": record.station,
+                    "last_update": new Date(record.last_update),
+                    "latitude": parseFloat(record.latitude),
+                    "longitude": parseFloat(record.longitude),
+                    "pollutant_id": record.pollutant_id,
+                    "pollutant_min": parseFloat(record.pollutant_min),
+                    "pollutant_max": parseFloat(record.pollutant_max),
+                    "pollutant_avg": parseFloat(record.pollutant_avg)
                 };
                 formattedData.push(formattedRecord);
             });
@@ -71,10 +83,10 @@ $(document).ready(function() {
         });
     };
 
-    // Register connector with Tableau
+    // Register the connector with Tableau
     tableau.registerConnector(myConnector);
 
-    // Initiate connector
+    // Event listener for submit button click
     $("#submitButton").click(function () {
         tableau.connectionName = "My Web Data Connector";
         tableau.submit();
