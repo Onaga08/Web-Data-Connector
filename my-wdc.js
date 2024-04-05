@@ -1,6 +1,6 @@
-(function () {
+$(document).ready(function() {
     // Define connector
-    var myConnector = tableau.myConnector()
+    var myConnector = tableau.makeConnector();
 
     // Define schema
     myConnector.getSchema = function (schemaCallback) {
@@ -45,10 +45,8 @@
     tableau.registerConnector(myConnector);
 
     // Initiate connector
-    $(document).ready(function () {
-        $("#submitButton").click(function () {
-            tableau.connectionName = "My Web Data Connector";
-            tableau.submit();
-        });
+    $("#submitButton").click(function () {
+        tableau.connectionName = "My Web Data Connector";
+        tableau.submit();
     });
-})();
+});
