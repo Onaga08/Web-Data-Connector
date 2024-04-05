@@ -2,56 +2,33 @@ $(document).ready(function() {
     // Define the Tableau connector
     var myConnector = tableau.makeConnector();
 
-    // Define the schema
+    // Define the schema dynamically based on the data
     myConnector.getSchema = function (schemaCallback) {
-        var schema = [];
-        // Define each field in the schema
-        schema.push({
-            id: "country",
-            dataType: tableau.dataTypeEnum.string
+        // Fetch data from the API to determine schema dynamically
+        $.getJSON(apiEndpoint, function (data) {
+            var schema = [];
+            // Check if data is available
+            if (data && data.records && data.records.length > 0) {
+                // Use the first record to determine fields and data types
+                var firstRecord = data.records[0];
+                for (var key in firstRecord) {
+                    // Determine the data type of the field
+                    var dataType = tableau.dataTypeEnum.string; // Default to string
+                    if (!isNaN(parseFloat(firstRecord[key]))) {
+                        dataType = tableau.dataTypeEnum.float;
+                    } else if (new Date(firstRecord[key]) !== "Invalid Date" && !isNaN(new Date(firstRecord[key]))) {
+                        dataType = tableau.dataTypeEnum.datetime;
+                    }
+                    // Add field to the schema
+                    schema.push({
+                        id: key,
+                        dataType: dataType
+                    });
+                }
+            }
+            // Callback with the dynamic schema
+            schemaCallback(schema);
         });
-        schema.push({
-            id: "state",
-            dataType: tableau.dataTypeEnum.string
-        });
-        schema.push({
-            id: "city",
-            dataType: tableau.dataTypeEnum.string
-        });
-        schema.push({
-            id: "station",
-            dataType: tableau.dataTypeEnum.string
-        });
-        schema.push({
-            id: "last_update",
-            dataType: tableau.dataTypeEnum.datetime
-        });
-        schema.push({
-            id: "latitude",
-            dataType: tableau.dataTypeEnum.numeric
-        });
-        schema.push({
-            id: "longitude",
-            dataType: tableau.dataTypeEnum.numeric
-        });
-        schema.push({
-            id: "pollutant_id",
-            dataType: tableau.dataTypeEnum.string
-        });
-        schema.push({
-            id: "pollutant_min",
-            dataType: tableau.dataTypeEnum.numeric
-        });
-        schema.push({
-            id: "pollutant_max",
-            dataType: tableau.dataTypeEnum.numeric
-        });
-        schema.push({
-            id: "pollutant_avg",
-            dataType: tableau.dataTypeEnum.numeric
-        });
-        // Callback with the schema
-        schemaCallback(schema);
     };
 
     // Define data retrieval function
@@ -59,26 +36,13 @@ $(document).ready(function() {
         var apiEndpoint = "https://api.data.gov.in/resource/3b01bcb8-0b14-4abf-b6f2-c1bfd384ba69?api-key=579b464db66ec23bdd000001cdd3946e44ce4aad7209ff7b23ac571b&format=json";
 
         $.getJSON(apiEndpoint, function (data) {
-            // Format data properly
-            var formattedData = [];
-            $.each(data.records, function (index, record) {
-                var formattedRecord = {
-                    "country": record.country,
-                    "state": record.state,
-                    "city": record.city,
-                    "station": record.station,
-                    "last_update": new Date(record.last_update),
-                    "latitude": parsenumeric(record.latitude),
-                    "longitude": parsenumeric(record.longitude),
-                    "pollutant_id": record.pollutant_id,
-                    "pollutant_min": parsenumeric(record.pollutant_min),
-                    "pollutant_max": parsenumeric(record.pollutant_max),
-                    "pollutant_avg": parsenumeric(record.pollutant_avg)
-                };
-                formattedData.push(formattedRecord);
-            });
-            // Pass data to Tableau
-            table.appendRows(formattedData);
+            if (data && data.records && data.records.length > 0) {
+                var formattedData = [];
+                $.each(data.records, function (index, record) {
+                    formattedData.push(record);
+                });
+                table.appendRows(formattedData);
+            }
             doneCallback();
         });
     };
