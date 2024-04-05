@@ -1,6 +1,6 @@
 (function () {
     // Define connector
-    var myConnector = tableau.makeConnector();
+    var myConnector = tableau.myConnector()
 
     // Define schema
     myConnector.getSchema = function (schemaCallback) {
