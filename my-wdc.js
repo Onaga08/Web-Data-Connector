@@ -2,33 +2,24 @@ $(document).ready(function() {
     // Define the Tableau connector
     var myConnector = tableau.makeConnector();
 
-    // Define the schema dynamically based on the data
+    // Define the fixed schema
+    var schema = [
+        { id: "country", dataType: tableau.dataTypeEnum.string },
+        { id: "state", dataType: tableau.dataTypeEnum.string },
+        { id: "city", dataType: tableau.dataTypeEnum.string },
+        { id: "station", dataType: tableau.dataTypeEnum.string },
+        { id: "last_update", dataType: tableau.dataTypeEnum.datetime },
+        { id: "latitude", dataType: tableau.dataTypeEnum.float },
+        { id: "longitude", dataType: tableau.dataTypeEnum.float },
+        { id: "pollutant_id", dataType: tableau.dataTypeEnum.string },
+        { id: "pollutant_min", dataType: tableau.dataTypeEnum.float },
+        { id: "pollutant_max", dataType: tableau.dataTypeEnum.float },
+        { id: "pollutant_avg", dataType: tableau.dataTypeEnum.float }
+    ];
+
+    // Define the schema retrieval function
     myConnector.getSchema = function (schemaCallback) {
-        // Fetch data from the API to determine schema dynamically
-        $.getJSON(apiEndpoint, function (data) {
-            var schema = [];
-            // Check if data is available
-            if (data && data.records && data.records.length > 0) {
-                // Use the first record to determine fields and data types
-                var firstRecord = data.records[0];
-                for (var key in firstRecord) {
-                    // Determine the data type of the field
-                    var dataType = tableau.dataTypeEnum.string; // Default to string
-                    if (!isNaN(parseFloat(firstRecord[key]))) {
-                        dataType = tableau.dataTypeEnum.float;
-                    } else if (new Date(firstRecord[key]) !== "Invalid Date" && !isNaN(new Date(firstRecord[key]))) {
-                        dataType = tableau.dataTypeEnum.datetime;
-                    }
-                    // Add field to the schema
-                    schema.push({
-                        id: key,
-                        dataType: dataType
-                    });
-                }
-            }
-            // Callback with the dynamic schema
-            schemaCallback(schema);
-        });
+        schemaCallback(schema);
     };
 
     // Define data retrieval function
