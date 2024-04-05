@@ -1,5 +1,6 @@
 $(document).ready(function() {
     // Define connector
+    tableau.init();
     var myConnector = tableau.makeConnector();
 
     // Define schema
