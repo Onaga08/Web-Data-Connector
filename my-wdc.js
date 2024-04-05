@@ -30,6 +30,12 @@ $(document).ready(function() {
             if (data && data.records && data.records.length > 0) {
                 var formattedData = [];
                 $.each(data.records, function (index, record) {
+                    // Replace NA values with null
+                    Object.keys(record).forEach(function(key) {
+                        if (record[key] === "NA") {
+                            record[key] = null;
+                        }
+                    });
                     formattedData.push(record);
                 });
                 table.appendRows(formattedData);
