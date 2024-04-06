@@ -4,24 +4,19 @@ $(document).ready(function() {
 
     // Define the fixed schema
     var schema = [
-        { id: "country", dataType: tableau.dataTypeEnum.string },
-        { id: "state", dataType: tableau.dataTypeEnum.string },
-        { id: "city", dataType: tableau.dataTypeEnum.string },
-        { id: "station", dataType: tableau.dataTypeEnum.string },
-        { id: "last_update", dataType: tableau.dataTypeEnum.datetime },
-        { id: "latitude", dataType: tableau.dataTypeEnum.float },
+        { id: "icao24", dataType: tableau.dataTypeEnum.string },
+        { id: "callsign", dataType: tableau.dataTypeEnum.string },
+        { id: "origin_country", dataType: tableau.dataTypeEnum.string },
+        { id: "time_position", dataType: tableau.dataTypeEnum.datetime },
+        { id: "last_contact", dataType: tableau.dataTypeEnum.datetime },
         { id: "longitude", dataType: tableau.dataTypeEnum.float },
-        { id: "pollutant_id", dataType: tableau.dataTypeEnum.string },
-        { id: "pollutant_min", dataType: tableau.dataTypeEnum.float },
-        { id: "pollutant_max", dataType: tableau.dataTypeEnum.float },
-        { id: "pollutant_avg", dataType: tableau.dataTypeEnum.float },
-        // Add the required fields specified by Tableau
-        { id: "id", dataType: tableau.dataTypeEnum.string },
-        { id: "columns", dataType: tableau.dataTypeEnum.string },
-        { id: "alias", dataType: tableau.dataTypeEnum.string },
-        { id: "description", dataType: tableau.dataTypeEnum.string },
-        { id: "incrementColumnId", dataType: tableau.dataTypeEnum.string },
-        { id: "joinOnly", dataType: tableau.dataTypeEnum.bool }
+        { id: "latitude", dataType: tableau.dataTypeEnum.float },
+        { id: "baro_altitude", dataType: tableau.dataTypeEnum.float },
+        { id: "on_ground", dataType: tableau.dataTypeEnum.bool },
+        { id: "velocity", dataType: tableau.dataTypeEnum.float },
+        { id: "true_track", dataType: tableau.dataTypeEnum.float },
+        { id: "vertical_rate", dataType: tableau.dataTypeEnum.float },
+        { id: "sensors", dataType: tableau.dataTypeEnum.int }
     ];
 
     // Define the schema retrieval function
@@ -31,23 +26,25 @@ $(document).ready(function() {
 
     // Define data retrieval function
     myConnector.getData = function (table, doneCallback) {
-        var apiEndpoint = "https://api.data.gov.in/resource/3b01bcb8-0b14-4abf-b6f2-c1bfd384ba69?api-key=579b464db66ec23bdd000001cdd3946e44ce4aad7209ff7b23ac571b&format=json";
-
-        $.getJSON(apiEndpoint, function (data) {
-            if (data && data.records && data.records.length > 0) {
-                var formattedData = [];
-                $.each(data.records, function (index, record) {
-                    // Replace NA values with null
-                    Object.keys(record).forEach(function(key) {
-                        if (record[key] === "NA") {
-                            record[key] = null;
-                        }
+        // Use jQuery AJAX to fetch data
+        $.ajax({
+            url: "https://opensky-network.org/api/states/all",
+            method: "GET",
+            dataType: "json",
+            success: function(data) {
+                if (data && data.states && data.states.length > 0) {
+                    var formattedData = [];
+                    $.each(data.states, function (index, state) {
+                        formattedData.push(state);
                     });
-                    formattedData.push(record);
-                });
-                table.appendRows(formattedData);
+                    table.appendRows(formattedData);
+                }
+                doneCallback();
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                console.error("Failed to fetch data:", errorThrown);
+                doneCallback();
             }
-            doneCallback();
         });
     };
 
@@ -56,7 +53,7 @@ $(document).ready(function() {
 
     // Event listener for submit button click
     $("#submitButton").click(function () {
-        tableau.connectionName = "My Web Data Connector";
+        tableau.connectionName = "OpenSky Network Data";
         tableau.submit();
     });
 });
