@@ -11,7 +11,6 @@ The appropriate schema expected also needs to be hardcoded for use.
   <li>Make necessary changes with respect to API Endpoint, Schema, etc.</li>
   <li>Create another repo on your github profile and use pages to deploy. </li>
   <li>Use the url in tableau's Web Data Connector Server option.</li>
-  <li>Use the url in tableau's Web Data Connector Server option.</li>
 </ul>
 
 ## License
