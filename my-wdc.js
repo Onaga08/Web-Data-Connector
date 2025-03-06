@@ -19,6 +19,7 @@ $(document).ready(function() {
         { id: "sensors", dataType: tableau.dataTypeEnum.int }
     ];
 
+    
     // Define the schema retrieval function
     myConnector.getSchema = function (schemaCallback) {
         schemaCallback(schema);
